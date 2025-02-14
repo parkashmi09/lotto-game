@@ -195,7 +195,7 @@ const MainContent = styled.div`
   min-height: 0; /* This is important for flex child scrolling */
 
   @media (max-width: 768px) {
-    padding: 1rem 0.75rem;
+    padding: 1rem 0;
   }
 
   &::-webkit-scrollbar {
