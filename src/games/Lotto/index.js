@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import styled from "styled-components"
-import { User, Bell, Target, Calendar, DollarSign, CheckCircle } from "lucide-react"
+import { User, Bell, Target, Calendar, DollarSign, CheckCircle, Hash, Clock } from "lucide-react"
 import NumbersTab from "./components/NumbersTab"
 import TypeTab from "./components/TypeTab"
 import DateTab from "./components/DateTab"
@@ -9,15 +9,15 @@ import AmountTab from "./components/AmountTab"
 import ConfirmTab from "./components/ConfirmTab"
 
 
-
 const Container = styled.div`
   max-width: 60%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  background: #fff;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  background: #1a1d24;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  color: #fff;
 
   @media (max-width: 1200px) {
     max-width: 70%;
@@ -37,7 +37,7 @@ const Container = styled.div`
 `
 
 const Header = styled.header`
-  background: #5f7a76;
+  background: #2a2e35;
   padding: 0.75rem;
   display: flex;
   justify-content: space-between;
@@ -45,139 +45,151 @@ const Header = styled.header`
   color: white;
   border-radius: 0;
 
+  select {
+    background: #1a1d24;
+    color: #fff;
+    border: 1px solid #3a3f47;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    outline: none;
+    cursor: pointer;
+
+    &:focus {
+      border-color: #00ff88;
+    }
+  }
+
+  .amount {
+    color: #00ff88;
+  }
+
   @media (max-width: 768px) {
     padding: 0.5rem;
     gap: 0.5rem;
   }
 `
 
-const GameSelect = styled.select`
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: none;
-  background: white;
-  color: #333;
-  font-size: 1rem;
-  margin-right: 1rem;
-
-  @media (max-width: 768px) {
-    font-size: 0.9rem;
-    padding: 0.25rem;
-    margin-right: 0.25rem;
-    max-width: 100px;
-  }
-`
-
-const Balance = styled.div`
+const StepperContainer = styled.div`
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
-`
-
-const TabsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.75rem 0.5rem;
-  background: #e6f4f1;
+  padding: 1rem 2rem;
+  background: #1e2328;
   position: relative;
-  gap: 0;
-//   width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid #2a2e35;
   
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
   @media (max-width: 768px) {
-    padding: 0.5rem 0.25rem;
-    justify-content: flex-start;
+    padding: 0.5rem;
   }
 `
 
-const StepConnector = styled.div`
-  flex: 1;
-  height: 2px;
-  background: ${props => props.active ? '#4CAF50' : '#ddd'};
-  position: relative;
-  max-width: 40px;
-
-  @media (max-width: 768px) {
-    max-width: 16px;
-  }
-`
-
-const Tab = styled.div`
+const Step = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  cursor: pointer;
   position: relative;
-  padding: 0 0.25rem;
-  min-width: max-content;
-
-  .icon-container {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: ${props => props.active ? '#4CAF50' : '#fff'};
-    border: 2px solid ${props => props.active ? '#4CAF50' : '#ddd'};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.35rem;
-    transition: all 0.3s ease;
-
-    @media (max-width: 768px) {
-      width: 28px;
-      height: 28px;
-      margin-bottom: 0.25rem;
-    }
-
-    svg {
-      color: ${props => props.active ? '#fff' : '#666'};
-      width: 18px;
-      height: 18px;
+  cursor: pointer;
+  opacity: ${({ active, completed }) => (active || completed ? 1 : 0.5)};
+  
+  &:not(:last-child) {
+    flex: 1;
+    
+    &::after {
+      content: "";
+      position: absolute;
+      left: calc(50% + 20px);
+      top: 61%;
+      width: calc(100% - 40px);
+      height: 2px;
+      background: ${({ active, completed }) =>
+        completed ? "#00ff88" : "#3a3f47"};
+      transform: translateY(-20px);
+      z-index: 1;
 
       @media (max-width: 768px) {
-        width: 14px;
-        height: 14px;
+        left: calc(50% + 12px);
+        width: calc(100% - 24px);
+        transform: translateY(-16px);
       }
     }
   }
 
-  span {
-    font-size: 0.7rem;
-    color: ${props => props.active ? '#4CAF50' : '#666'};
+  .circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: ${({ active, completed }) =>
+      completed ? "#00ff88" : active ? "#3a3f47" : "transparent"};
+    border: 2px solid ${({ active, completed }) =>
+      completed ? "#00ff88" : "#3a3f47"};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.2s ease;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      color: ${({ active, completed }) =>
+        completed ? "#1a1d24" : "#fff"};
+    }
+
+    @media (max-width: 768px) {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+
+  .label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: ${({ active, completed }) =>
+      active || completed ? "#fff" : "#666"};
     text-transform: uppercase;
-    font-weight: ${props => props.active ? '600' : '400'};
+    letter-spacing: 0.5px;
+    text-align: center;
     white-space: nowrap;
 
     @media (max-width: 768px) {
       font-size: 0.6rem;
+      letter-spacing: 0;
     }
   }
 
   &:hover {
-    .icon-container {
-      border-color: #4CAF50;
-      svg {
-        color: ${props => props.active ? '#fff' : '#4CAF50'};
-      }
+    opacity: 1;
+    
+    .circle {
+      transform: scale(1.05);
+      border-color: ${({ completed }) =>
+        completed ? "#00ff88" : "#00cc6f"};
+      background: ${({ active, completed }) =>
+        completed ? "#00ff88" : active ? "#00cc6f" : "transparent"};
     }
-    span {
-      color: #4CAF50;
-    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 2px;
   }
 `
 
 const MainContent = styled.div`
   padding: 1.5rem;
-  background: #ffffff;
+  background: #1a1d24;
   flex: 1;
+   width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 
   @media (max-width: 768px) {
     padding: 1rem 0.75rem;
@@ -185,37 +197,56 @@ const MainContent = styled.div`
 `
 
 const Footer = styled.footer`
+  margin-top: auto;
+  padding: 1rem;
+  background: #2a2e35;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  background: #4CAF50;
-  color: white;
-  position: sticky;
-  bottom: 0;
-`
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 
-const FooterButton = styled.button`
-  padding: 0.75rem;
-  border: none;
-  background: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-
-  @media (max-width: 768px) {
-    padding: 0.6rem;
-    font-size: 0.8rem;
-    gap: 0.25rem;
+  .nav-buttons {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
+  button {
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+
+    &.primary {
+      background: #00ff88;
+      color: #1a1d24;
+
+      &:hover {
+        background: #00cc6f;
+      }
+
+      &:disabled {
+        background: #3a3f47;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+
+    &.secondary {
+      background: #3a3f47;
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background: #4a4f57;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
   }
 `
 
@@ -224,9 +255,14 @@ function Lotto() {
   const [numbers, setNumbers] = useState([])
   const [gameType, setGameType] = useState("pick2")
   const [betType, setBetType] = useState("straight")
-  const [selectedDate, setSelectedDate] = useState(new Date())
-  const [selectedDrawing, setSelectedDrawing] = useState(null)
+  const [selectedDates, setSelectedDates] = useState([new Date()])
+  const [selectedDrawings, setSelectedDrawings] = useState([])
   const [amount, setAmount] = useState(1)
+
+  const drawings = [
+    { id: 1, name: "PR Evening", time: "4:00 PM", prize: 90.00 },
+    { id: 2, name: "PA Evening", time: "6:25 PM", prize: 90.00 },
+  ]
 
   const handleNumberSubmit = (newNumber) => {
     if (!numbers.includes(newNumber)) {
@@ -247,12 +283,87 @@ function Lotto() {
     setNumbers([]) // Clear numbers when game type changes
   }
 
+  const handleDateSelect = (date) => {
+    setSelectedDates(prevDates => {
+      const dateExists = prevDates.some(d => 
+        d.toDateString() === date.toDateString()
+      )
+      if (dateExists) {
+        return prevDates.filter(d => 
+          d.toDateString() !== date.toDateString()
+        )
+      }
+      return [...prevDates, date]
+    })
+  }
+
+  const handleDrawingSelect = (drawing) => {
+    setSelectedDrawings(prevDrawings => {
+      const exists = prevDrawings.find(d => d.id === drawing.id)
+      if (exists) {
+        return prevDrawings.filter(d => d.id !== drawing.id)
+      }
+      return [...prevDrawings, drawing]
+    })
+  }
+
+  const handlePrevStep = () => {
+    const currentIndex = ["numbers", "type", "date", "drawing", "amount", "confirm"].indexOf(activeTab)
+    if (currentIndex > 0) {
+      setActiveTab(["numbers", "type", "date", "drawing", "amount", "confirm"][currentIndex - 1])
+    }
+  }
+
+  const handleNextStep = () => {
+    const currentIndex = ["numbers", "type", "date", "drawing", "amount", "confirm"].indexOf(activeTab)
+    if (currentIndex < ["numbers", "type", "date", "drawing", "amount", "confirm"].length - 1) {
+      setActiveTab(["numbers", "type", "date", "drawing", "amount", "confirm"][currentIndex + 1])
+    }
+  }
+
+  const generateTickets = () => {
+    if (!numbers.length || !selectedDrawings.length || !selectedDates.length) return []
+
+    const ticketCount = selectedDates.length * selectedDrawings.length * amount
+    const totalCostPerTicket = 1.00
+    const ticketCards = []
+
+    selectedDates.forEach(date => {
+      selectedDrawings.forEach(drawing => {
+        ticketCards.push({
+          numbers,
+          betType,
+          costPerTicket: totalCostPerTicket,
+          totalCost: totalCostPerTicket * amount,
+          drawingState: `${drawing.name} ${drawing.time}`,
+          drawDate: date.toDateString() === new Date().toDateString() ? "Today" : "Tomorrow",
+          prize: drawing.prize,
+          withFireball: drawing.withFireball
+        })
+      })
+    })
+
+    return {
+      tickets: ticketCards,
+      totalCost: ticketCount * totalCostPerTicket,
+      ticketCount
+    }
+  }
+
+  const ticketData = useMemo(() => generateTickets(), [
+    numbers,
+    selectedDrawings,
+    selectedDates,
+    betType,
+    amount
+  ])
+
   const renderActiveTab = () => {
     switch (activeTab) {
       case "numbers":
         return (
-          <NumbersTab 
-            numbers={numbers} 
+          <NumbersTab
+            numbers={numbers}
             onSubmit={handleNumberSubmit}
             onRemove={handleNumberRemove}
             onRemoveAll={handleRemoveAll}
@@ -262,20 +373,29 @@ function Lotto() {
       case "type":
         return <TypeTab betType={betType} setBetType={setBetType} />
       case "date":
-        return <DateTab selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+        return (
+          <DateTab 
+            selectedDates={selectedDates} 
+            onDateSelect={handleDateSelect}
+          />
+        )
       case "drawing":
-        return <DrawingTab selectedDrawing={selectedDrawing} setSelectedDrawing={setSelectedDrawing} />
+        return (
+          <DrawingTab 
+            selectedDrawings={selectedDrawings} 
+            onDrawingSelect={handleDrawingSelect}
+            drawings={drawings}
+          />
+        )
       case "amount":
         return <AmountTab amount={amount} setAmount={setAmount} />
       case "confirm":
         return (
           <ConfirmTab 
-            numbers={numbers} 
-            gameType={gameType} 
-            betType={betType}
-            selectedDate={selectedDate} 
-            selectedDrawing={selectedDrawing} 
-            amount={amount} 
+            tickets={ticketData.tickets}
+            totalCost={ticketData.totalCost}
+            availableBalance={0}
+            amount={amount}
           />
         )
       default:
@@ -287,74 +407,111 @@ function Lotto() {
     <Container>
       <Header>
         <User size={24} />
-        <GameSelect value={gameType} onChange={handleGameTypeChange}>
+        <select value={gameType} onChange={handleGameTypeChange}>
           <option value="pick2">Pick 2</option>
           <option value="pick3">Pick 3</option>
           <option value="pick4">Pick 4</option>
           <option value="pick5">Pick 5</option>
-        </GameSelect>
-        <Balance>
+        </select>
+        <div className="amount">
           <DollarSign size={16} />
           <span>$ 0.00 USD</span>
-        </Balance>
+        </div>
         <Bell size={24} />
       </Header>
 
-      <TabsContainer>
-        <Tab active={activeTab === "numbers"} onClick={() => setActiveTab("numbers")}>
-          <div className="icon-container">
+      <StepperContainer>
+        <Step 
+          active={activeTab === "numbers"} 
+          completed={activeTab !== "numbers"}
+          onClick={() => setActiveTab("numbers")}
+        >
+          <div className="circle">
             <Target />
           </div>
-          <span>NUMBERS</span>
-        </Tab>
-        <StepConnector active={activeTab !== "numbers"} />
-        <Tab active={activeTab === "type"} onClick={() => setActiveTab("type")}>
-          <div className="icon-container">
-            <Target />
+          <div className="label">NUMBERS</div>
+        </Step>
+        <Step 
+          active={activeTab === "type"} 
+          completed={["date", "drawing", "amount", "confirm"].includes(activeTab)}
+          onClick={() => setActiveTab("type")}
+        >
+          <div className="circle">
+            <Hash />
           </div>
-          <span>TYPE</span>
-        </Tab>
-        <StepConnector active={activeTab !== "numbers" && activeTab !== "type"} />
-        <Tab active={activeTab === "date"} onClick={() => setActiveTab("date")}>
-          <div className="icon-container">
+          <div className="label">TYPE</div>
+        </Step>
+        <Step 
+          active={activeTab === "date"} 
+          completed={["drawing", "amount", "confirm"].includes(activeTab)}
+          onClick={() => setActiveTab("date")}
+        >
+          <div className="circle">
             <Calendar />
           </div>
-          <span>DATE</span>
-        </Tab>
-        <StepConnector active={activeTab !== "numbers" && activeTab !== "type" && activeTab !== "date"} />
-        <Tab active={activeTab === "drawing"} onClick={() => setActiveTab("drawing")}>
-          <div className="icon-container">
-            <Target />
+          <div className="label">DATE</div>
+        </Step>
+        <Step 
+          active={activeTab === "drawing"} 
+          completed={["amount", "confirm"].includes(activeTab)}
+          onClick={() => setActiveTab("drawing")}
+        >
+          <div className="circle">
+            <Clock />
           </div>
-          <span>DRAWING</span>
-        </Tab>
-        <StepConnector active={activeTab !== "numbers" && activeTab !== "type" && activeTab !== "date" && activeTab !== "drawing"} />
-        <Tab active={activeTab === "amount"} onClick={() => setActiveTab("amount")}>
-          <div className="icon-container">
+          <div className="label">DRAWING</div>
+        </Step>
+        <Step 
+          active={activeTab === "amount"} 
+          completed={["confirm"].includes(activeTab)}
+          onClick={() => setActiveTab("amount")}
+        >
+          <div className="circle">
             <DollarSign />
           </div>
-          <span>AMOUNT</span>
-        </Tab>
-        <StepConnector active={activeTab === "confirm"} />
-        <Tab active={activeTab === "confirm"} onClick={() => setActiveTab("confirm")}>
-          <div className="icon-container">
+          <div className="label">AMOUNT</div>
+        </Step>
+        <Step 
+          active={activeTab === "confirm"} 
+          completed={false}
+          onClick={() => setActiveTab("confirm")}
+        >
+          <div className="circle">
             <CheckCircle />
           </div>
-          <span>CONFIRM</span>
-        </Tab>
-      </TabsContainer>
+          <div className="label">CONFIRM</div>
+        </Step>
+      </StepperContainer>
 
       <MainContent>
         {renderActiveTab()}
       </MainContent>
 
       <Footer>
-        <FooterButton>
+        <div className="nav-buttons">
+        <div style={{display: "flex", gap: "1rem", width: "100%", justifyContent: "space-between"}}>
+        <button 
+            className="secondary" 
+            onClick={handlePrevStep}
+            disabled={activeTab === "numbers"}
+          >
+            Previous Step
+          </button>
+          <button 
+            className="primary" 
+            onClick={handleNextStep}
+            disabled={activeTab === "confirm"}
+          >
+            Next Step
+          </button>
+        </div>
+        </div>
+        <button className="primary">
           BUY TICKETS
-        </FooterButton>
-        <FooterButton>
+        </button>
+        <button className="secondary">
           MY TICKETS
-        </FooterButton>
+        </button>
       </Footer>
     </Container>
   )

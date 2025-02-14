@@ -1,38 +1,144 @@
 import styled from "styled-components"
+import { Calendar } from "lucide-react"
 
-const DateButton = styled.button`
-  padding: 0.5rem 1rem;
-  margin: 0.25rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.25rem;
-  background: ${(props) => (props.selected ? "#4CAF50" : "white")};
-  color: ${(props) => (props.selected ? "white" : "#333")};
-  cursor: pointer;
-  font-weight: 500;
+const Container = styled.div`
+  padding: 1rem;
+  color: #fff;
 `
 
-function DateTab({ selectedDate, setSelectedDate }) {
-  const dates = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date()
-    date.setDate(date.getDate() + i)
-    return date
+const DateList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: calc(100vh - 400px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+
+  /* Custom scrollbar styles */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+`
+
+const DateButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: ${props => props.selected ? '#00ff88' : 'rgba(255, 255, 255, 0.05)'};
+  color: ${props => props.selected ? '#1a1d24' : '#fff'};
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+
+  &:hover {
+    background: ${props => props.selected ? '#00ff88' : 'rgba(255, 255, 255, 0.1)'};
+  }
+
+  .icon {
+    width: 40px;
+    height: 40px;
+    background: ${props => props.selected ? '#1a1d24' : 'rgba(255, 255, 255, 0.1)'};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      color: ${props => props.selected ? '#00ff88' : '#fff'};
+    }
+  }
+
+  .date-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .date {
+    font-weight: 600;
+  }
+
+  .relative {
+    font-size: 0.875rem;
+    color: ${props => props.selected ? '#1a1d24' : '#00ff88'};
+    opacity: ${props => props.selected ? 0.8 : 1};
+  }
+`
+
+function DateTab({ selectedDates = [], onDateSelect }) {
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  
+  const nextWeek = new Array(7).fill(null).map((_, index) => {
+    const date = new Date(today)
+    date.setDate(date.getDate() + index)
+    return {
+      date,
+      relative: index === 0 ? "Today" : index === 1 ? "Tomorrow" : new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }).format(date)
+    }
   })
 
+  const isSelected = (date) => 
+    selectedDates.some(selectedDate => 
+      selectedDate.toDateString() === date.toDateString()
+    )
+
   return (
-    <div>
-      <h2>Select Date</h2>
-      {dates.map((date) => (
-        <DateButton
-          key={date.toISOString()}
-          selected={date.toDateString() === selectedDate.toDateString()}
-          onClick={() => setSelectedDate(date)}
-        >
-          {date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-        </DateButton>
-      ))}
-    </div>
+    <Container>
+      <DateList>
+        {nextWeek.map(({ date, relative }) => (
+          <DateButton
+            key={date.toISOString()}
+            selected={isSelected(date)}
+            onClick={() => onDateSelect(date)}
+          >
+            <div className="icon">
+              <Calendar />
+            </div>
+            <div className="date-info">
+              <div className="date">
+                {new Intl.DateTimeFormat('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric'
+                }).format(date)}
+              </div>
+              <div className="relative">{relative}</div>
+            </div>
+          </DateButton>
+        ))}
+      </DateList>
+    </Container>
   )
 }
 
 export default DateTab
-

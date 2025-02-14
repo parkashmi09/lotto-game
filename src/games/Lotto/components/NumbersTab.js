@@ -27,7 +27,7 @@ const InputContainer = styled.div`
 const Input = styled.input`
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #3a3f47;
   border-radius: 2rem;
   font-size: 1rem;
   outline: none;
@@ -35,10 +35,11 @@ const Input = styled.input`
   box-sizing: border-box;
   -webkit-appearance: none;
   appearance: none;
-  background: #fff;
+  background: #2a2e35;
+  color: #fff;
 
   &::placeholder {
-    color: #a0aec0;
+    color: #666;
     opacity: 1;
   }
 
@@ -57,8 +58,8 @@ const Input = styled.input`
   }
 
   &:focus {
-    border-color: #4caf50;
-    box-shadow: 0 0 0 1px #4caf50;
+    border-color: #00ff88;
+    box-shadow: 0 0 0 1px #00ff88;
   }
 `;
 
@@ -88,7 +89,7 @@ const RemoveAllButton = styled.button`
   }
 
   &:hover {
-    color: #4caf50;
+    color: #00ff88;
   }
 
   &:active {
@@ -110,13 +111,14 @@ const NumbersList = styled.div`
 
 const NumberItem = styled.div`
   position: relative;
-  background: #f8f9fa;
+  background: #2a2e35;
   padding: 0.75rem;
   border-radius: 0.5rem;
   text-align: left;
   font-size: 1.1rem;
   font-weight: 500;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #3a3f47;
+  color: #fff;
 
   @media (max-width: 768px) {
     padding: 0.6rem;
@@ -127,8 +129,8 @@ const NumberItem = styled.div`
     position: absolute;
     top: -6px;
     right: -6px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background: #1a1d24;
+    border: 1px solid #3a3f47;
     border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -163,7 +165,7 @@ const NumberItem = styled.div`
 
 const TicketsCount = styled.div`
   margin-bottom: 0.75rem;
-  color: #666;
+  color: #fff;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -177,7 +179,7 @@ const TicketsCount = styled.div`
 `;
 
 const Example = styled.div`
-  color: #666;
+  color: #999;
   font-size: 0.85rem;
   margin-left: 0.75rem;
 

@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+
 import './App.css';
 import Lotto from './games/Lotto';
 
