@@ -11,13 +11,14 @@ import ConfirmTab from "./components/ConfirmTab"
 
 const Container = styled.div`
   max-width: 60%;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
   background: #1a1d24;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   color: #fff;
+  overflow: hidden;
 
   @media (max-width: 1200px) {
     max-width: 70%;
@@ -55,12 +56,12 @@ const Header = styled.header`
     cursor: pointer;
 
     &:focus {
-      border-color: #00ff88;
+      border-color: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
     }
   }
 
   .amount {
-    color: #00ff88;
+    color: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
   }
 
   @media (max-width: 768px) {
@@ -102,7 +103,7 @@ const Step = styled.div`
       width: calc(100% - 40px);
       height: 2px;
       background: ${({ active, completed }) =>
-        completed ? "#00ff88" : "#3a3f47"};
+        completed ? "linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))" : "#3a3f47"};
       transform: translateY(-20px);
       z-index: 1;
 
@@ -119,9 +120,9 @@ const Step = styled.div`
     height: 40px;
     border-radius: 50%;
     background: ${({ active, completed }) =>
-      completed ? "#00ff88" : active ? "#3a3f47" : "transparent"};
+      completed ? "linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))" : active ? "#3a3f47" : "transparent"};
     border: 2px solid ${({ active, completed }) =>
-      completed ? "#00ff88" : "#3a3f47"};
+      completed ? "linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))" : "#3a3f47"};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -171,9 +172,9 @@ const Step = styled.div`
     .circle {
       transform: scale(1.05);
       border-color: ${({ completed }) =>
-        completed ? "#00ff88" : "#00cc6f"};
+        completed ? "linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))" : "#00cc6f"};
       background: ${({ active, completed }) =>
-        completed ? "#00ff88" : active ? "#00cc6f" : "transparent"};
+        completed ? "linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))" : active ? "#00cc6f" : "transparent"};
     }
   }
 
@@ -186,13 +187,32 @@ const MainContent = styled.div`
   padding: 1.5rem;
   background: #1a1d24;
   flex: 1;
-   width: 100%;
+  width: 100%;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  overflow-y: auto;
+  min-height: 0; /* This is important for flex child scrolling */
 
   @media (max-width: 768px) {
     padding: 1rem 0.75rem;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
   }
 `
 
@@ -220,7 +240,7 @@ const Footer = styled.footer`
     transition: all 0.2s;
 
     &.primary {
-      background: #00ff88;
+      background: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
       color: #1a1d24;
 
       &:hover {
@@ -393,9 +413,13 @@ function Lotto() {
         return (
           <ConfirmTab 
             tickets={ticketData.tickets}
+            ticketCount={ticketData.tickets?.length*numbers.length}
             totalCost={ticketData.totalCost}
             availableBalance={0}
             amount={amount}
+            numbers={numbers}
+            selectedDates={selectedDates}
+            selectedDrawings={selectedDrawings}
           />
         )
       default:
@@ -414,7 +438,7 @@ function Lotto() {
           <option value="pick5">Pick 5</option>
         </select>
         <div className="amount">
-          <DollarSign size={16} />
+          {/* <DollarSign size={16} /> */}
           <span>$ 0.00 USD</span>
         </div>
         <Bell size={24} />

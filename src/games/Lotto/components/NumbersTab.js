@@ -58,8 +58,8 @@ const Input = styled.input`
   }
 
   &:focus {
-    border-color: #00ff88;
-    box-shadow: 0 0 0 1px #00ff88;
+    border-color: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
+    box-shadow: 0 0 0 1px linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
   }
 `;
 
@@ -89,7 +89,7 @@ const RemoveAllButton = styled.button`
   }
 
   &:hover {
-    color: #00ff88;
+    color: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
   }
 
   &:active {

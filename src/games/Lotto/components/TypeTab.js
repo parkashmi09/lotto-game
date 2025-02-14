@@ -13,8 +13,8 @@ const TypeButton = styled.button`
   justify-content: space-between;
   padding: 1rem 2rem;
   border-radius: 2rem;
-  border: 2px solid ${(props) => (props.active ? "#4CAF50" : "#e2e8f0")};
-  background: ${(props) => (props.active ? "#4CAF50" : "white")};
+  border: 2px solid ${(props) => (props.active ? "linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))" : "#e2e8f0")};
+  background: ${(props) => (props.active ? "linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))" : "white")};
   color: ${(props) => (props.active ? "white" : "#333")};
   cursor: pointer;
   width: 100%;
@@ -24,7 +24,7 @@ const TypeButton = styled.button`
   overflow: hidden;
 
   &:hover {
-    border-color: #4CAF50;
+    border-color: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
   }
 
   .icon {

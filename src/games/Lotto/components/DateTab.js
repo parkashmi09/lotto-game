@@ -42,14 +42,14 @@ const DateButton = styled.button`
   padding: 1rem;
   border: none;
   border-radius: 0.5rem;
-  background: ${props => props.selected ? '#00ff88' : 'rgba(255, 255, 255, 0.05)'};
+  background: ${props => props.selected ? 'linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))' : 'rgba(255, 255, 255, 0.05)'};
   color: ${props => props.selected ? '#1a1d24' : '#fff'};
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
 
   &:hover {
-    background: ${props => props.selected ? '#00ff88' : 'rgba(255, 255, 255, 0.1)'};
+    background: ${props => props.selected ? 'linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))' : 'rgba(255, 255, 255, 0.1)'};
   }
 
   .icon {
@@ -65,7 +65,7 @@ const DateButton = styled.button`
     svg {
       width: 20px;
       height: 20px;
-      color: ${props => props.selected ? '#00ff88' : '#fff'};
+      color: #fff;
     }
   }
 
@@ -82,7 +82,7 @@ const DateButton = styled.button`
 
   .relative {
     font-size: 0.875rem;
-    color: ${props => props.selected ? '#1a1d24' : '#00ff88'};
+    color: ${props => props.selected ? '#1a1d24' : 'linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113))'};
     opacity: ${props => props.selected ? 0.8 : 1};
   }
 `
