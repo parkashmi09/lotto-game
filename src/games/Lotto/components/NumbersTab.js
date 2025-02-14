@@ -6,7 +6,7 @@ const Container = styled.div`
   padding: 0.75rem;
 
   @media (max-width: 768px) {
-    padding: 0.5rem;
+    padding: 1.5rem;
   }
 `;
 
@@ -25,6 +25,8 @@ const InputContainer = styled.div`
 `;
 
 const Input = styled.input`
+  transition: all 0.2s ease;
+
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid #3a3f47;
@@ -58,8 +60,8 @@ const Input = styled.input`
   }
 
   &:focus {
-    border-color: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
-    box-shadow: 0 0 0 1px linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
+    border-color: #00ff88;
+    box-shadow: 0 0 0 1px #00ff88;
   }
 `;
 
@@ -89,7 +91,7 @@ const RemoveAllButton = styled.button`
   }
 
   &:hover {
-    color: linear-gradient(90deg, rgb(36, 238, 137), rgb(159, 232, 113));
+    color: #00ff88;
   }
 
   &:active {
@@ -110,6 +112,19 @@ const NumbersList = styled.div`
 `;
 
 const NumberItem = styled.div`
+  animation: fadeIn 0.3s ease;
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   position: relative;
   background: #2a2e35;
   padding: 0.75rem;
@@ -200,24 +215,48 @@ function NumbersTab({ numbers, onSubmit, onRemove, onRemoveAll, gameType }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const requiredLength =
-      gameType === "pick2"
-        ? 2
-        : gameType === "pick3"
-        ? 3
-        : gameType === "pick4"
-        ? 4
-        : 5;
-
+    const requiredLength = getRequiredLength();
+    
     if (inputValue.length === requiredLength && !numbers.includes(inputValue)) {
       onSubmit(inputValue);
       setInputValue("");
     }
   };
 
+  const getRequiredLength = () => {
+    switch (gameType) {
+      case "pick2": return 2;
+      case "pick3": return 3;
+      case "pick4": return 4;
+      case "pick5": return 5;
+      default: return 2;
+    }
+  };
+
   const handleInputChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
+    
+    // Prevent duplicate numbers
+    if (numbers.includes(value)) {
+      return;
+    }
+    
     setInputValue(value);
+    
+    // Auto-submit when required length is reached
+    const requiredLength = getRequiredLength();
+    if (value.length === requiredLength) {
+      const inputElement = e.target;
+      
+      // Add visual feedback
+      inputElement.style.borderColor = '#00ff88';
+      setTimeout(() => {
+        inputElement.style.borderColor = '';
+      }, 300);
+      
+      onSubmit(value);
+      setInputValue("");
+    }
   };
 
   const getPlaceholder = () => {
